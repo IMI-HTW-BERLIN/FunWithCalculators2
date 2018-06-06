@@ -2,139 +2,229 @@ package postfix;
 
 public class Postfix {
 
+    private String postfixNotation;
+    private boolean hexMode;
 
-    public static String evaluatePfx(String pfx) throws StackUnderflow, PostfixException{
-        checkPostfix(pfx);
-        Stack<String> stack = new Stack<>();
+    public Postfix(String postfixNotation, boolean isHexadecimal) {
+        this.postfixNotation = postfixNotation;
+        this.hexMode = isHexadecimal;
+    }
+
+    public Postfix() {
+        this("", false);
+    }
+
+    public String evaluate() {
+        if (hexMode)
+            return evaluateHex();
+        else
+            return evaluateDec();
+    }
+
+    private String evaluateDec() {
+        String pfx = postfixNotation;
+        Stack<Double> operandStack = new LinkedListStack<>();
+
+        StringBuilder number = new StringBuilder();
+
         while (pfx.length() > 0) {
-            String token = pfx.substring(0,1);
-            if (token.matches("[0-9]")) {
-                stack.push(token);
-            }
-            else if (token.matches("[-+*/^]")){
-                String rhs = stack.top();
-                stack.pop();
-                String lhs = stack.top();
-                stack.pop();
-                stack.push((calculate(lhs, pfx.substring(0,1), rhs)));
-            }
-            pfx = pfx.substring(1);
-        }
-        return stack.top();
-    }
+            String next = pfx.substring(0, 1);
 
-    public static String infixToPostfix (String ifx) throws StackUnderflow, InfixException{
-        checkInfix(ifx);
-        Stack<String> stack = new Stack<>();
-        StringBuilder result = new StringBuilder();
-        while(ifx.length() > 0) {
-            String token = ifx.substring(0,1);
-            if (!token.matches("[-+*/^()]")) result.append(token);
-            if (token.equals("(")) stack.push(token);
-            if (token.equals(")")) {
-                while (!stack.top().equals("(")) {
-                    result.append(stack.top());
-                    stack.pop();
+            if (next.equals(" ")) {
+                if (number.length() != 0) {
+                    operandStack.push(Double.parseDouble(number.toString()));
+                    number.delete(0, number.length());
                 }
-                stack.pop();
-            }
-            if (token.matches("[-+*/^]")) {
-                while(!stack.isEmpty() && !((precedence(stack.top()) < precedence(token)) ||
-                        ((precedence(token) == 3 && precedence(stack.top()) == precedence(token))))) {
-                    result.append(stack.top());
-                    stack.pop();
+            } else if (isNumber(next) || next.equals(".")) {
+                number.append(next);
+            } else {
+                if (number.length() != 0) {
+                    operandStack.push(Double.parseDouble(number.toString()));
+                    number.delete(0, number.length());
                 }
-                stack.push(token);
+                
+                try {
+                    double rhs = operandStack.pop();
+                    double lhs = operandStack.pop();
+                    operandStack.push(calculate(lhs, next, rhs));
+                } catch (StackUnderflowException e) {
+                    throw new MalformedPostfixExpressionException();
+                }
             }
-            ifx = ifx.substring(1);
+            pfx = pfx.substring(1, pfx.length());
         }
-        while(!stack.isEmpty()) {
-            result.append(stack.top());
-            stack.pop();
-        }
-        return result.toString();
+
+        double result = operandStack.pop();
+
+        if (!operandStack.isEmpty())
+            throw new MalformedPostfixExpressionException();
+
+        return Double.toString(result);
     }
 
-    private static int precedence (String operator) {
-        if(operator.equals("^")) return 3;
-        if(operator.matches("[+-]")) return 1;
-        if(operator.matches("[*/]")) return 2;
-        return 0;
+    private String evaluateHex() {
+        String pfx = postfixNotation;
+        Stack<Integer> operandStack = new LinkedListStack<>();
+
+        StringBuilder number = new StringBuilder();
+
+        while (pfx.length() > 0) {
+            String next = pfx.substring(0, 1);
+
+            if (next.equals(" ")) {
+                if (number.length() != 0) {
+                    String numberString = number.toString();
+                    operandStack.push(Integer.decode((numberString.startsWith("0x") ? numberString : "0x" + numberString)));
+                    number.delete(0, number.length());
+                }
+            } else if (isHexNumber(next)) {
+                number.append(next);
+            } else {
+                if (number.length() != 0) {
+                    String numberString = number.toString();
+                    operandStack.push(Integer.decode((numberString.startsWith("0x") ? numberString : "0x" + numberString)));
+                    number.delete(0, number.length());
+                }
+
+                try {
+                    int rhs = operandStack.pop();
+                    int lhs = operandStack.pop();
+                    operandStack.push((int) calculate(lhs, next, rhs));
+                } catch (StackUnderflowException e) {
+                    throw new MalformedPostfixExpressionException();
+                }
+            }
+            pfx = pfx.substring(1, pfx.length());
+        }
+
+        int result = operandStack.pop();
+
+        if (!operandStack.isEmpty())
+            throw new MalformedPostfixExpressionException();
+
+        return Integer.toHexString(result);
     }
 
-    private static String calculate(String lh, String operator, String rh){
-        int result = 0;
-        int lhs = Integer.parseInt(lh);
-        int rhs = Integer.parseInt(rh);
-        switch(operator) {
+    public String infixToPostfix(String infix, boolean isHexadecimal) {
+        StringBuilder sb = new StringBuilder();
+        Stack<String> stack = new LinkedListStack<>();
+
+        StringBuilder number = new StringBuilder();
+        boolean previousWasNumber = false;
+        boolean previousWasOperator = false;
+
+        while (infix.length() > 0) {
+            String next = infix.substring(0, 1);
+
+            if (next.equals(" ")) {
+                if (number.length() != 0) {
+                    previousWasNumber = true;
+                    sb.append(" ").append(number.toString());
+                    number.delete(0, number.length());
+                }
+            } else if ((!isHexadecimal && (isNumber(next) || next.equals("."))) || (isHexadecimal && isHexNumber(next))) {
+                if (previousWasNumber)
+                    throw new MalformedInfixExpressionException("There may not be two consecutive numbers");
+                previousWasOperator = false;
+                number.append(next);
+            } else {
+                if (number.length() != 0) {
+                    sb.append(" ").append(number.toString());
+                    number.delete(0, number.length());
+                }
+                previousWasNumber = false;
+
+                if (next.equals("(")) {
+                    previousWasOperator = true;
+                    stack.push("(");
+                } else if (next.equals(")")) {
+                    if (previousWasOperator)
+                        throw new MalformedInfixExpressionException("There may not be an operator followed by a closed parenthesis");
+                    while (!stack.isEmpty() && !stack.top().equals("("))
+                        sb.append(" ").append(stack.pop());
+                    try {
+                        stack.pop();
+                    } catch (StackUnderflowException e) {
+                        throw new MalformedInfixExpressionException("A closed parenthesis without a matching open parenthesis was found");
+                    }
+                } else if (isOperator(next)) {
+                    if (previousWasOperator)
+                        throw new MalformedInfixExpressionException("There may not be two consecutive operators or " +
+                                "an open parenthesis followed by an operator");
+                    previousWasOperator = true;
+                    while (!stack.isEmpty() && !(isLowerPrecedence(stack.top(), next) || (next.equals("^") && stack.top().equals("^"))))
+                        sb.append(" ").append(stack.pop());
+                    stack.push(next);
+                } else throw new MalformedInfixExpressionException();
+            }
+
+            infix = infix.substring(1, infix.length());
+        }
+
+        if (number.length() != 0)
+            sb.append(" ").append(number.toString());
+
+        while (!stack.isEmpty()) {
+            if (stack.top().equals("("))
+                throw new MalformedInfixExpressionException("An open parenthesis without a matching closed parenthesis was found");
+            else
+                sb.append(" ").append(stack.pop());
+        }
+
+        postfixNotation = sb.toString().trim();
+        hexMode = isHexadecimal;
+
+        return postfixNotation;
+    }
+
+    private boolean isNumber(String str) {
+        return str.matches("[0-9]");
+    }
+
+    private boolean isHexNumber(String str) {
+        return str.matches("[0-9a-fA-F]");
+    }
+
+    private boolean isOperator(String str) {
+        return str.matches("[+\\-*/^]");
+    }
+
+    private boolean isLowerPrecedence(String top, String next) {
+        //True if top is of lower precedence than next
+        return getPrecedence(top) < getPrecedence(next);
+    }
+
+    private int getPrecedence(String operator) {
+        switch (operator) {
             case "+":
-                result = lhs + rhs;
-                break;
             case "-":
-                result = lhs - rhs;
-                break;
+                return 1;
             case "*":
-                result = lhs * rhs;
-                break;
             case "/":
-                result = lhs / rhs;
-                break;
+                return 2;
             case "^":
-                result = (int)Math.pow(lhs, rhs);
-                break;
+                return 3;
+            case "(":
+            case ")":
             default:
-                break;
+                return 0;
         }
-        return ""+result;
     }
 
-    public static void checkInfix(String ifx) throws StackUnderflow, InfixException{
-        Stack<String> p = new Stack<>();
-        Stack<String> op = new Stack<>();
-        Stack<String> num = new Stack<>();
-        if (ifx.substring(0,1).matches("[-+*/^]") ||
-            ifx.substring(ifx.length()-1,ifx.length()).matches("[-+*/^]")) throw new InfixException();
-        while (ifx.length() > 0){
-            String token = ifx.substring(0,1);
-            if (token.equals("(")) p.push(token);
-            if (token.equals(")") && num.isEmpty())
-                throw new InfixException();
-            if (token.equals(")") && !p.isEmpty()) p.pop();
-            else if (token.equals(")")) throw new InfixException();
-
-            if (token.matches("[-+*/^]") && op.isEmpty()) op.push(token);
-            else if (token.matches("[-+*/^]")) throw new InfixException();
-            else if (!op.isEmpty()) op.pop();
-
-            if (token.matches("[0-9]") && num.isEmpty()) num.push(token);
-            else if (token.matches("[0-9]")) throw new InfixException();
-            else if (!op.isEmpty()) num.pop();
-
-
-            ifx = ifx.substring(1);
+    private double calculate(double lhs, String operator, double rhs) {
+        switch (operator) {
+            case "+":
+                return lhs + rhs;
+            case "-":
+                return lhs - rhs;
+            case "*":
+                return lhs * rhs;
+            case "/":
+                return lhs / rhs;
+            case "^":
+                return Math.pow(lhs, rhs);
+            default:
+                throw new MalformedPostfixExpressionException("Invalid operator: " + operator);
         }
-        if (!p.isEmpty()) throw new InfixException();
-    }
-
-    public static void checkPostfix(String pfx) throws PostfixException, StackUnderflow{
-        Stack<String> operator = new Stack<>();
-        Stack<String> operand = new Stack<>();
-        if (pfx.length() <= 1 || pfx.matches("[-+*/^()]+")) throw new PostfixException();
-        if (pfx.substring(0,1).matches("[-+*/^]")) throw new PostfixException();
-        if (pfx.substring(pfx.length()-1,pfx.length()).matches("[0-9]")) throw new PostfixException();
-        while (pfx.length() > 0) {
-            String token = pfx.substring(0,1);
-            if (token.matches("[0-9]")) operand.push(token);
-            else if(token.matches("[-+*/^]")) operator.push(token);
-            pfx = pfx.substring(1);
-        }
-        while (!operator.isEmpty()) {
-            if (operand.isEmpty()) throw new PostfixException();
-            else operand.pop();
-            if (operand.isEmpty()) throw new PostfixException();
-            operator.pop();
-        }
-        if (!operand.isEmpty()) operand.pop();
-        if (!operand.isEmpty()) throw new PostfixException();
     }
 }
