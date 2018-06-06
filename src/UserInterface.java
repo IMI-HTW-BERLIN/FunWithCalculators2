@@ -65,8 +65,8 @@ public class UserInterface
         JPanel buttonPanel = new JPanel(new GridLayout(6, 4));
         addButton(buttonPanel, "c");
         addButton(buttonPanel, "^");
-        buttonPanel.add(new JLabel(" "));
-        buttonPanel.add(new JLabel(" "));
+        addButton(buttonPanel, "(");
+        addButton(buttonPanel, ")");
 
         addButton(buttonPanel, "7");
         addButton(buttonPanel, "8");
@@ -136,6 +136,8 @@ public class UserInterface
             case "/":
             case "^":
             case ".":
+            case "(":
+            case ")":
                 calc.buttonPressed(command);
                 break;
             case "=":
