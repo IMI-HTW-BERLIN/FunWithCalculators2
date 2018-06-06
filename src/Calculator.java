@@ -7,8 +7,8 @@
  */
 public class Calculator
 {
-    private UserInterfaceHex gui;
-    private CalcEngineHex engine;
+    private UserInterface gui;
+    private CalcEnginePostfix engine;
 
     public static void main(String[] args) {
         Calculator c = new Calculator();
@@ -18,8 +18,8 @@ public class Calculator
      */
     public Calculator()
     {
-        engine = new CalcEngineHex();
-        gui = new UserInterfaceHex(engine);
+        engine = new CalcEnginePostfix();
+        gui = new UserInterface(engine);
     }
 
     /**

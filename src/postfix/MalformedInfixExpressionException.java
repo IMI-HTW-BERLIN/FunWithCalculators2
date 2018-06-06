@@ -1,6 +1,6 @@
 package postfix;
 
-public class MalformedInfixExpressionException extends RuntimeException {
+public class MalformedInfixExpressionException extends Exception {
     public MalformedInfixExpressionException() {
 
     }

@@ -2,27 +2,24 @@ package postfix;
 
 public class Postfix {
 
-    private String postfixNotation;
     private boolean hexMode;
 
-    public Postfix(String postfixNotation, boolean isHexadecimal) {
-        this.postfixNotation = postfixNotation;
+    public Postfix(boolean isHexadecimal) {
         this.hexMode = isHexadecimal;
     }
 
     public Postfix() {
-        this("", false);
+        this(false);
     }
 
-    public String evaluate() {
+    public String evaluate(String pfx) throws MalformedPostfixExpressionException{
         if (hexMode)
-            return evaluateHex();
+            return evaluateHex(pfx);
         else
-            return evaluateDec();
+            return evaluateDec(pfx);
     }
 
-    private String evaluateDec() {
-        String pfx = postfixNotation;
+    private String evaluateDec(String pfx) throws MalformedPostfixExpressionException{
         Stack<Double> operandStack = new LinkedListStack<>();
 
         StringBuilder number = new StringBuilder();
@@ -62,8 +59,7 @@ public class Postfix {
         return Double.toString(result);
     }
 
-    private String evaluateHex() {
-        String pfx = postfixNotation;
+    private String evaluateHex(String pfx) throws MalformedPostfixExpressionException{
         Stack<Integer> operandStack = new LinkedListStack<>();
 
         StringBuilder number = new StringBuilder();
@@ -105,7 +101,7 @@ public class Postfix {
         return Integer.toHexString(result);
     }
 
-    public String infixToPostfix(String infix, boolean isHexadecimal) {
+    public String infixToPostfix(String infix) throws MalformedInfixExpressionException{
         StringBuilder sb = new StringBuilder();
         Stack<String> stack = new LinkedListStack<>();
 
@@ -122,7 +118,7 @@ public class Postfix {
                     sb.append(" ").append(number.toString());
                     number.delete(0, number.length());
                 }
-            } else if ((!isHexadecimal && (isNumber(next) || next.equals("."))) || (isHexadecimal && isHexNumber(next))) {
+            } else if ((!hexMode && (isNumber(next) || next.equals("."))) || (hexMode && isHexNumber(next))) {
                 if (previousWasNumber)
                     throw new MalformedInfixExpressionException("There may not be two consecutive numbers");
                 previousWasOperator = false;
@@ -171,10 +167,7 @@ public class Postfix {
                 sb.append(" ").append(stack.pop());
         }
 
-        postfixNotation = sb.toString().trim();
-        hexMode = isHexadecimal;
-
-        return postfixNotation;
+        return sb.toString().trim();
     }
 
     private boolean isNumber(String str) {
@@ -211,7 +204,7 @@ public class Postfix {
         }
     }
 
-    private double calculate(double lhs, String operator, double rhs) {
+    private double calculate(double lhs, String operator, double rhs) throws MalformedPostfixExpressionException{
         switch (operator) {
             case "+":
                 return lhs + rhs;

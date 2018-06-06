@@ -14,21 +14,18 @@ import javax.swing.border.*;
 public class UserInterface
         implements ActionListener
 {
-    protected CalcEngineHex calc;
-    private boolean showingAuthor;
+    protected CalcEnginePostfix calc;
 
     protected JFrame frame;
     protected JTextField display;
-    private JLabel status;
 
     /**
      * Create a user interface.
      * @param engine The calculator engine.
      */
-    public UserInterface(CalcEngineHex engine)
+    public UserInterface(CalcEnginePostfix engine)
     {
         calc = engine;
-        showingAuthor = true;
         makeFrame();
         frame.setVisible(true);
     }
@@ -47,7 +44,7 @@ public class UserInterface
      */
     protected void makeFrame()
     {
-        frame = new JFrame(calc.getTitle());
+        frame = new JFrame("AWESOME CALCULATOR 3000!!1!elf");
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -67,7 +64,7 @@ public class UserInterface
 
         JPanel buttonPanel = new JPanel(new GridLayout(6, 4));
         addButton(buttonPanel, "c");
-        buttonPanel.add(new JLabel(" "));
+        addButton(buttonPanel, "^");
         buttonPanel.add(new JLabel(" "));
         buttonPanel.add(new JLabel(" "));
 
@@ -86,19 +83,18 @@ public class UserInterface
         addButton(buttonPanel, "3");
         addButton(buttonPanel, "*");
 
-        addButton(buttonPanel, "+/-");
+        addButton(buttonPanel, ".");
         addButton(buttonPanel, "0");
         addButton(buttonPanel, "=");
         addButton(buttonPanel, "/");
 
         buttonPanel.setPreferredSize(new Dimension(400,400));
-
-
         contentPane.add(buttonPanel, BorderLayout.CENTER);
 
         //status = new JLabel(calc.getAuthor());
         //contentPane.add(status, BorderLayout.SOUTH);
 
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
     }
 
@@ -123,42 +119,31 @@ public class UserInterface
     {
         String command = event.getActionCommand();
 
-        if(command.equals("0") ||
-                command.equals("1") ||
-                command.equals("2") ||
-                command.equals("3") ||
-                command.equals("4") ||
-                command.equals("5") ||
-                command.equals("6") ||
-                command.equals("7") ||
-                command.equals("8") ||
-                command.equals("9")) {
-            int number = Integer.parseInt(command);
-            calc.numberPressed(number);
-        }
-        else if(command.equals("+")) {
-            calc.plus();
-        }
-        else if(command.equals("-")) {
-            calc.minus();
-        }
-        else if(command.equals("=")) {
-            calc.equals();
-        }
-        else if(command.equals("c")) {
-            calc.clear();
-        }
-        else if(command.equals("?")) {
-            showInfo();
-        }
-        else if(command.equals("*")) {
-            calc.multi();
-        }
-        else if(command.equals("/")) {
-            calc.div();
-        }
-        else if(command.equals("+/-")) {
-            calc.switchSign();
+        switch (command) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+            case "^":
+            case ".":
+                calc.buttonPressed(command);
+                break;
+            case "=":
+                calc.equals();
+                break;
+            case "c":
+                calc.clear();
+                break;
         }
         // else unknown command.
 
@@ -171,20 +156,7 @@ public class UserInterface
      */
     protected void redisplay()
     {
-        display.setText("" + calc.getDisplayValue());
+        display.setText(calc.getDisplay());
     }
 
-    /**
-     * Toggle the info display in the calculator's status area between the
-     * author and version information.
-     */
-    protected void showInfo()
-    {
-        if(showingAuthor)
-            status.setText(calc.getVersion());
-        else
-            status.setText(calc.getAuthor());
-
-        showingAuthor = !showingAuthor;
-    }
 }
