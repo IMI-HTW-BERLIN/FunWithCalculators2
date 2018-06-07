@@ -11,13 +11,12 @@ import javax.swing.border.*;
  * @author David Panagiotopulos and Bernhard Hoffmann | Original: David J. Barnes and Michael Kolling
  * @version 2018.05.24
  */
-public class UserInterface
-        implements ActionListener
-{
+public class UserInterface implements ActionListener {
     protected CalcEnginePostfix calc;
 
     protected JFrame frame;
     protected JTextField display;
+    protected JButton dotButton;
 
     /**
      * Create a user interface.
@@ -83,7 +82,9 @@ public class UserInterface
         addButton(buttonPanel, "3");
         addButton(buttonPanel, "*");
 
-        addButton(buttonPanel, ".");
+        dotButton = new JButton(".");
+        dotButton.addActionListener(this);
+        buttonPanel.add(dotButton);
         addButton(buttonPanel, "0");
         addButton(buttonPanel, "=");
         addButton(buttonPanel, "/");

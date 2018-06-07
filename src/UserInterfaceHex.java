@@ -10,7 +10,9 @@ import java.awt.event.WindowEvent;
 public class UserInterfaceHex extends UserInterface {
     private JLabel labelDecHexSwitch;
     private JPanel buttonsForHex;
+
     private boolean hexMode;
+    private boolean showRoundingInfo;
 
     /**
      * Create a user interface using the superclass. Adds buttons for hexadecimal calculation.
@@ -21,6 +23,7 @@ public class UserInterfaceHex extends UserInterface {
         super(engine);
         makeHexFrame();
         hexMode = false;
+        showRoundingInfo = true;
     }
 
     /**
@@ -92,18 +95,19 @@ public class UserInterfaceHex extends UserInterface {
         hexMode = !hexMode;
 
         //Check if result was rounded during conversion
-        if (calc.hexMode(hexMode)) {
-            JOptionPane.showMessageDialog(frame, "The result was rounded before converting it to hexadecimal.",
-                    "Rounded result", JOptionPane.INFORMATION_MESSAGE);
+        boolean wasRounded = calc.hexMode(hexMode);
+
+        if (showRoundingInfo && wasRounded) {
+            String message = "The result was rounded before converting it to hexadecimal.";
+            JCheckBox chkShowAgain = new JCheckBox("Don't show this hint again");
+            chkShowAgain.addActionListener(e -> showRoundingInfo = !chkShowAgain.isSelected());
+            Object[] dialogContent = {message, chkShowAgain};
+            JOptionPane.showMessageDialog(frame, dialogContent,"Rounded result", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        if (hexMode) {
-            labelDecHexSwitch.setText("Hex");
-            buttonsForHex.setVisible(true);
-        } else {
-            labelDecHexSwitch.setText("Dec");
-            buttonsForHex.setVisible(false);
-        }
+        buttonsForHex.setVisible(hexMode);
+        dotButton.setEnabled(!hexMode);
+        labelDecHexSwitch.setText(hexMode ? "Hex" : "Dex");
 
         redisplay();
     }

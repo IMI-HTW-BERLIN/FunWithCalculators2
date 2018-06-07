@@ -51,17 +51,77 @@ public class CalcEnginePostfix {
 
         if (!displayValue.equals("")) {
             if (enabled) {
-                if (!displayValue.matches("\\.0$") && displayValue.contains("."))
+
+                if (displayValue.matches("[0-9]+[.]?[0]*")) {
+                    long displayValueLong = Math.round(Double.parseDouble(displayValue));
+                    sb.append(Long.toHexString(displayValueLong).toUpperCase());
+                } else {
+                    sb.append(convertDecToHex(displayValue));
                     wasRounded = true;
-
-                long displayValueLong = Math.round(Double.parseDouble(displayValue));
-
-                sb.append(Long.toHexString(displayValueLong).toUpperCase());
+                }
             } else {
-                sb.append(Integer.decode("0x" + displayValue));
+                sb.append(convertHexToDec(displayValue));
             }
         }
 
         return wasRounded;
+    }
+
+    String convertDecToHex(String decString) {
+        int i = 0;
+        StringBuilder result = new StringBuilder();
+
+        while (i < decString.length()) {
+            if (i == 0 && decString.substring(0, 1).equals("(")) {
+                result.append("(");
+                i++;
+            }
+
+            StringBuilder number = new StringBuilder();
+
+            while (i < decString.length() && decString.substring(i, i + 1).matches("[0-9.]")) {
+                number.append(decString.substring(i, i + 1));
+                i++;
+            }
+
+            String hexNumber = Long.toHexString(Math.round(Double.parseDouble(number.toString()))).toUpperCase();
+            result.append(hexNumber);
+
+            while (i < decString.length() && decString.substring(i, i + 1).matches("[+\\-*/^()]")) {
+                result.append(decString.substring(i, i + 1));
+                i++;
+            }
+        }
+
+        return result.toString();
+    }
+
+    String convertHexToDec(String hexString) {
+        int i = 0;
+        StringBuilder result = new StringBuilder();
+
+        while (i < hexString.length()) {
+            if (i == 0 && hexString.substring(0, 1).equals("(")) {
+                result.append("(");
+                i++;
+            }
+
+            StringBuilder number = new StringBuilder();
+
+            while (i < hexString.length() && hexString.substring(i, i + 1).matches("[0-9A-F]")) {
+                number.append(hexString.substring(i, i + 1));
+                i++;
+            }
+
+            long decNumber = Long.decode("0x" + number.toString());
+            result.append(decNumber);
+
+            while (i < hexString.length() && hexString.substring(i, i + 1).matches("[+\\-*/^()]")) {
+                result.append(hexString.substring(i, i + 1));
+                i++;
+            }
+        }
+
+        return result.toString();
     }
 }
