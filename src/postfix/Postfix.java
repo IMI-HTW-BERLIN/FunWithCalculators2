@@ -13,7 +13,7 @@ public class Postfix {
     }
 
     public void hexMode(boolean hexMode) {
-        this.hexMode = hexMode;„
+        this.hexMode = hexMode;
     }
 
     public String evaluate(String pfx) throws MalformedPostfixExpressionException{
