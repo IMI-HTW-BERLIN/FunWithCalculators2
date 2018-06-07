@@ -7,7 +7,7 @@
  */
 public class Calculator
 {
-    private UserInterface gui;
+    private UserInterfaceHex gui;
     private CalcEnginePostfix engine;
 
     public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class Calculator
     public Calculator()
     {
         engine = new CalcEnginePostfix();
-        gui = new UserInterface(engine);
+        gui = new UserInterfaceHex(engine);
     }
 
     /**

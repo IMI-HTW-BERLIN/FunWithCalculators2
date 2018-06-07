@@ -102,7 +102,7 @@ public class Postfix {
         if (!operandStack.isEmpty())
             throw new MalformedPostfixExpressionException();
 
-        return Integer.toHexString(result);
+        return Integer.toHexString(result).toUpperCase();
     }
 
     public String infixToPostfix(String infix) throws MalformedInfixExpressionException{

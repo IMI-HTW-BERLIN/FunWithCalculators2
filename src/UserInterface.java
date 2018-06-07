@@ -96,6 +96,7 @@ public class UserInterface
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
+        frame.setLocationRelativeTo(null);
     }
 
     /**

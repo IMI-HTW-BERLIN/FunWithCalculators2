@@ -41,5 +41,23 @@ public class CalcEnginePostfix {
         return sb.toString();
     }
 
+    void hexMode(boolean enabled) {
+        pf.hexMode(enabled);
 
+        String displayValue = sb.toString();
+        clear();
+
+        if (!displayValue.equals("")) {
+            if (enabled) {
+                if (!displayValue.matches("\\.0$") && displayValue.contains("."))
+                    System.out.println("Can't convert floating point to hexadecimal. Rounding...");
+
+                long displayValueLong = Math.round(Double.parseDouble(displayValue));
+
+                sb.append(Long.toHexString(displayValueLong).toUpperCase());
+            } else {
+                sb.append(Integer.decode("0x" + displayValue));
+            }
+        }
+    }
 }
