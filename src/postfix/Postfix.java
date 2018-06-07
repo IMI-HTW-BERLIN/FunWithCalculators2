@@ -12,6 +12,10 @@ public class Postfix {
         this(false);
     }
 
+    public void hexMode(boolean hexMode) {
+        this.hexMode = hexMode;„
+    }
+
     public String evaluate(String pfx) throws MalformedPostfixExpressionException{
         if (hexMode)
             return evaluateHex(pfx);
