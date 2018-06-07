@@ -2,11 +2,11 @@ import postfix.MalformedInfixExpressionException;
 import postfix.MalformedPostfixExpressionException;
 import postfix.Postfix;
 
-public class CalcEnginePostfix {
+class CalcEnginePostfix {
     private StringBuilder sb;
     private Postfix pf;
 
-    public CalcEnginePostfix() {
+    CalcEnginePostfix() {
         sb = new StringBuilder();
         pf = new Postfix();
     }
@@ -67,7 +67,7 @@ public class CalcEnginePostfix {
         return wasRounded;
     }
 
-    String convertDecToHex(String decString) {
+    private String convertDecToHex(String decString) {
         int i = 0;
         StringBuilder result = new StringBuilder();
 
@@ -80,7 +80,7 @@ public class CalcEnginePostfix {
             StringBuilder number = new StringBuilder();
 
             while (i < decString.length() && decString.substring(i, i + 1).matches("[0-9.]")) {
-                number.append(decString.substring(i, i + 1));
+                number.append(decString, i, i + 1);
                 i++;
             }
 
@@ -88,7 +88,7 @@ public class CalcEnginePostfix {
             result.append(hexNumber);
 
             while (i < decString.length() && decString.substring(i, i + 1).matches("[+\\-*/^()]")) {
-                result.append(decString.substring(i, i + 1));
+                result.append(decString, i, i + 1);
                 i++;
             }
         }
@@ -96,7 +96,7 @@ public class CalcEnginePostfix {
         return result.toString();
     }
 
-    String convertHexToDec(String hexString) {
+    private String convertHexToDec(String hexString) {
         int i = 0;
         StringBuilder result = new StringBuilder();
 
@@ -109,7 +109,7 @@ public class CalcEnginePostfix {
             StringBuilder number = new StringBuilder();
 
             while (i < hexString.length() && hexString.substring(i, i + 1).matches("[0-9A-F]")) {
-                number.append(hexString.substring(i, i + 1));
+                number.append(hexString, i, i + 1);
                 i++;
             }
 
@@ -117,7 +117,7 @@ public class CalcEnginePostfix {
             result.append(decNumber);
 
             while (i < hexString.length() && hexString.substring(i, i + 1).matches("[+\\-*/^()]")) {
-                result.append(hexString.substring(i, i + 1));
+                result.append(hexString, i, i + 1);
                 i++;
             }
         }

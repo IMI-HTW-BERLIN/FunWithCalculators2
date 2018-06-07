@@ -1,11 +1,11 @@
 package postfix;
 
 public class MalformedInfixExpressionException extends Exception {
-    public MalformedInfixExpressionException() {
+    MalformedInfixExpressionException() {
 
     }
 
-    public MalformedInfixExpressionException(String message) {
+    MalformedInfixExpressionException(String message) {
         super(message);
     }
 }

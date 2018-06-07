@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * A graphical user interface extending the original one by adding Hexadecimal buttons.
@@ -19,7 +17,7 @@ public class UserInterfaceHex extends UserInterface {
      *
      * @param engine The calculator engine.
      */
-    public UserInterfaceHex(CalcEnginePostfix engine) {
+    UserInterfaceHex(CalcEnginePostfix engine) {
         super(engine);
         makeHexFrame();
         hexMode = false;
@@ -64,9 +62,9 @@ public class UserInterfaceHex extends UserInterface {
     }
 
     /**
-     * Overrides the original actionPerformed method by adding Hthe buttons for Hexadecimal calculation.
+     * Overrides the original actionPerformed method by adding the buttons for Hexadecimal calculation.
      *
-     * @param event The event that has occured.
+     * @param event The event that has occurred.
      */
     @Override
     public void actionPerformed(ActionEvent event) {

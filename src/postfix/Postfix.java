@@ -4,12 +4,8 @@ public class Postfix {
 
     private boolean hexMode;
 
-    public Postfix(boolean isHexadecimal) {
-        this.hexMode = isHexadecimal;
-    }
-
     public Postfix() {
-        this(false);
+        hexMode = false;
     }
 
     public void hexMode(boolean hexMode) {

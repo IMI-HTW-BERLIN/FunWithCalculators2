@@ -12,17 +12,17 @@ import javax.swing.border.*;
  * @version 2018.05.24
  */
 public class UserInterface implements ActionListener {
-    protected CalcEnginePostfix calc;
+    CalcEnginePostfix calc;
 
-    protected JFrame frame;
-    protected JTextField display;
-    protected JButton dotButton;
+    JFrame frame;
+    private JTextField display;
+    JButton dotButton;
 
     /**
      * Create a user interface.
      * @param engine The calculator engine.
      */
-    public UserInterface(CalcEnginePostfix engine)
+    UserInterface(CalcEnginePostfix engine)
     {
         calc = engine;
         makeFrame();
@@ -30,18 +30,9 @@ public class UserInterface implements ActionListener {
     }
 
     /**
-     * Set the visibility of the interface.
-     * @param visible true if the interface is to be made visible, false otherwise.
-     */
-    public void setVisible(boolean visible)
-    {
-        frame.setVisible(visible);
-    }
-
-    /**
      * Make the frame for the user interface.
      */
-    protected void makeFrame()
+    private void makeFrame()
     {
         frame = new JFrame("AWESOME CALCULATOR 3000!!1!elf");
 
@@ -105,7 +96,7 @@ public class UserInterface implements ActionListener {
      * @param panel The panel to receive the button.
      * @param buttonText The text for the button.
      */
-    protected void addButton(Container panel, String buttonText)
+    void addButton(Container panel, String buttonText)
     {
         JButton button = new JButton(buttonText);
         button.addActionListener(this);
@@ -115,7 +106,7 @@ public class UserInterface implements ActionListener {
     /**
      * An interface action has been performed.
      * Find out what it was and handle it.
-     * @param event The event that has occured.
+     * @param event The event that has occurred.
      */
     public void actionPerformed(ActionEvent event)
     {
@@ -158,7 +149,7 @@ public class UserInterface implements ActionListener {
      * Update the interface display to show the current value of the
      * calculator.
      */
-    protected void redisplay()
+    void redisplay()
     {
         display.setText(calc.getDisplay());
     }

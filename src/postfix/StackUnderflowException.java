@@ -1,4 +1,4 @@
 package postfix;
 
-public class StackUnderflowException extends RuntimeException {
+class StackUnderflowException extends RuntimeException {
 }

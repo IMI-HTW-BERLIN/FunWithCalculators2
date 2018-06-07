@@ -7,26 +7,15 @@
  */
 public class Calculator
 {
-    private UserInterfaceHex gui;
-    private CalcEnginePostfix engine;
-
     public static void main(String[] args) {
-        Calculator c = new Calculator();
+        new Calculator();
     }
     /**
      * Create a new calculator and show it.
      */
-    public Calculator()
+    private Calculator()
     {
-        engine = new CalcEnginePostfix();
-        gui = new UserInterfaceHex(engine);
-    }
-
-    /**
-     * In case the window was closed, show it again.
-     */
-    public void show()
-    {
-        gui.setVisible(true);
+        CalcEnginePostfix engine = new CalcEnginePostfix();
+        new UserInterfaceHex(engine);
     }
 }
