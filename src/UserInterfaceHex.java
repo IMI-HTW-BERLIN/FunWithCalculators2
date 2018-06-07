@@ -90,7 +90,12 @@ public class UserInterfaceHex extends UserInterface {
      */
     private void toggleMode() {
         hexMode = !hexMode;
-        calc.hexMode(hexMode);
+
+        //Check if result was rounded during conversion
+        if (calc.hexMode(hexMode)) {
+            JOptionPane.showMessageDialog(frame, "The result was rounded before converting it to hexadecimal.",
+                    "Rounded result", JOptionPane.INFORMATION_MESSAGE);
+        }
 
         if (hexMode) {
             labelDecHexSwitch.setText("Hex");

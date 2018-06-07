@@ -41,7 +41,9 @@ public class CalcEnginePostfix {
         return sb.toString();
     }
 
-    void hexMode(boolean enabled) {
+    boolean hexMode(boolean enabled) {
+        boolean wasRounded = false;
+
         pf.hexMode(enabled);
 
         String displayValue = sb.toString();
@@ -50,7 +52,7 @@ public class CalcEnginePostfix {
         if (!displayValue.equals("")) {
             if (enabled) {
                 if (!displayValue.matches("\\.0$") && displayValue.contains("."))
-                    System.out.println("Can't convert floating point to hexadecimal. Rounding...");
+                    wasRounded = true;
 
                 long displayValueLong = Math.round(Double.parseDouble(displayValue));
 
@@ -59,5 +61,7 @@ public class CalcEnginePostfix {
                 sb.append(Integer.decode("0x" + displayValue));
             }
         }
+
+        return wasRounded;
     }
 }
